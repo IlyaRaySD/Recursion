@@ -2,11 +2,11 @@
 
 using namespace std;
 
-int moves[8][2] = { {2,1}, {2,-1}, {-2,-1}, {-2,1}, {1,2}, {1,-2}, {-1,2}, {-1,-2} };
+int moves[8][2] = { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2} };
 
 int horse_move(int** field, int c, int x_h, int y_h, int size) {
 	int x2, y2, k = 0, end = 0;
-	while (end == 0 and k < size) {
+	while (end == 0 and k < 8) {
 		x2 = x_h + moves[k][0];
 		y2 = y_h + moves[k][1];
 		k++;
@@ -50,6 +50,7 @@ void horse_turn() {
 		for (int i = 0; i < n; i++) {
 			for (int j = 0; j < n; j++)
 				cout << " " << field[i][j];
+			cout << endl;
 		}
 	}
 	else
