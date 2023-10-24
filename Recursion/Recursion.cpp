@@ -14,7 +14,7 @@ int horse_move(int** field, int c, int x_h, int y_h, int size) {
 			if (field[x2][y2] == 0) {
 				field[x2][y2] = c;
 				if (c < size*size and horse_move(field, c + 1, x2, y2, size) == 0)
-					field[x2][y2] = 0;
+					field[x2][y2] = 0;//this does not work(maybe)
 				else
 					end = 1;
 			}
