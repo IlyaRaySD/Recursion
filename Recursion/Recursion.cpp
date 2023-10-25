@@ -10,7 +10,7 @@ int moves[8][2] = { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}
 void clear() { system("cls"); }
 
 int opt_catch() {
-	int time = 30;
+	int time = 10;
 	string option = "\nВыберите интересующий алгоритм:";
 	for (int i = 0; i < option.length(); i++) {
 		Sleep(time);
@@ -18,8 +18,8 @@ int opt_catch() {
 	}
 	cout << endl;
 
-	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Разделяй и влавствуй, поиск максимума\n5 - Задача о ферзях\n6 - Выход из программы\n\nВводите номер: ";
-	time = 3;
+	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Разделяй и влавствуй, поиск максимума\n5 - Задача о ферзях\n6 - Задача о ферзях(наглядно)\n7 - Выход из программы\n\nВводите номер: ";
+	time = 1;
 	for (int i = 0; i < instr.length(); i++) {
 		Sleep(time);
 		cout << instr[i];
@@ -35,12 +35,13 @@ void set_cons(int x, int y, int space) {
 	SetConsoleCursorPosition(hConsole, position);
 }
 
-void anim(int x, int y, int space, int num, clock_t start_time) {
+template<typename T>
+void anim(int x, int y, int space, T num, clock_t start_time) {
 	clock_t end_time = clock();
-	double search_time = (double)(end_time - start_time);
-	if (search_time / 1000 > 7)
-		TIME /= search_time / 10000.0;
-	if (search_time / 1000 > 60)
+	double search_time = (double)((end_time - start_time)/1000);
+	if (search_time > 7)
+		TIME /=  1.2;
+	if (search_time > 50)
 		return;
 	else {
 		Sleep(TIME);
@@ -58,6 +59,17 @@ void end_anim(int** field, int size, int space) {
 			set_cons(i + 1, j + 1, space);
 			cout << "\b";
 			cout << field[i][j] << " ";
+		}
+	}
+}
+
+void end_queen(int** field, int size, int space) {
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			set_cons(i + 1, j + 1, space);
+			cout << "\b";
+			if (field[i][j] == -1) cout << 'l' << " ";
+			else cout << 0 << " ";
 		}
 	}
 }
@@ -109,14 +121,15 @@ void horse_turn_an() {
 		cout << endl;
 	}
 
-	//set_cons(1, n + 2, 1);
 	int x_h = 0, y_h = 0;
 	cout << "Введите координаты коня: \nx = ";
 	cin >> x_h;
 	cout << "y = ";
 	cin >> y_h;
-	cout << "Это может занять максимум 60 секунд";
+	cout << "Пожалуйста, подождите, это может занять максимум 50 секунд";
+
 	clock_t start_time = clock();
+
 	anim(x_h, y_h, space_w, 1, start_time);
 
 	field[x_h - 1][y_h - 1] = 1;
@@ -124,11 +137,11 @@ void horse_turn_an() {
 	if (horse_move_an(field, 2, x_h - 1, y_h - 1, n, 0)) {
 		cout << endl;
 		set_cons(0, n + 6, 1);
-		cout << "Конь смог." << endl;
+		cout << "Конь смог.\nЕсли у вас всё перед глазами пронеслось, то попробуйте перезапустить программу и сразу выбрать этот пункт снова" << endl << endl;
 	}
 	else {
 		set_cons(0, n + 6, 1);
-		cout << "\nКонь не смог." << endl;
+		cout << "\nКонь не смог.\nЕсли у вас всё перед глазами пронеслось, то попробуйте перезапустить программу и сразу выбрать этот пункт снова" << endl << endl;
 	}
 	for (int i = 0; i < n; i++)
 		delete[] field[i];
@@ -215,16 +228,169 @@ void fibon_sub() {
 	int n;
 	cout << "\nВведите порядковый номер конечного элемента последовательности: ";
 	cin >> n;
+	cout << endl;
 	for (int i = 1; i <= n; i++)
 		cout << fibonachi(i) << " ";
 	cout << endl << endl;
+}
+
+void queen_del(int** field, int x, int y, int n) {
+	for (int i = 0; i < n; i++) {
+		field[i][y]--;
+		field[x][i]--;
+		int diag = y - x + i;
+		if (diag >= 0 and diag < n) field[i][diag]--;
+		diag = y + x - i;
+		if (diag >= 0 and diag < n) field[i][diag]--;
+	}
+	field[x][y] = 0;
+}
+
+void queen_stand(int** field, int x, int y, int n) {
+	for (int i = 0; i < n; i++) {
+		field[i][y]++;
+		field[x][i]++;
+		int diag = y - x + i;
+		if (diag >= 0 and diag < n) field[i][diag]++;
+		diag = y + x - i;
+		if (diag >= 0 and diag < n) field[i][diag]++;
+	}
+	field[x][y] = -1;
+}
+
+bool queen(int** field, int n, int i) {
+	bool res = 0;
+	for (int j = 0; j < n; j++) {
+		if (field[i][j] == 0) {
+			queen_stand(field, i, j, n);
+			if (i == n - 1) res = 1;
+			else {
+				if (!(res = queen(field, n, i + 1))) queen_del(field, i, j, n);
+			}
+		}
+		if (res) break;
+	}
+	return res;
+}
+
+void queen_quest() {
+	int n;
+	cout << "\nВведите колличество ферзей и размерность поля: ";
+	cin >> n;
+	cout << endl;
+
+	int** field;
+	field = new int* [n];
+	for (int j = 0; j < n; j++)
+		field[j] = new int[n];
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++)
+			field[i][j] = 0;
+	}
+
+	queen(field, n, 0);
+
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			if (field[i][j] == -1) cout << "l ";
+			else cout << "0 ";
+		}
+		cout << endl;
+	}
+	cout << "Ферзи отмечены как 'l'" << endl << endl;
+}
+
+void queen_stand_an(int** field, int x, int y, int n, clock_t time) {
+	for (int i = 0; i < n; i++) {
+		++field[i][y];
+		anim(i+1, y + 1, n/10+2, field[i][y], time);
+		++field[x][i];
+		anim(x+1, i+1, n/10+2, field[i][y], time);
+		int diag = y - x + i;
+		if (diag >= 0 and diag < n) {
+			++field[i][diag];
+			anim(i+1, diag+1, n/10+2, field[i][diag], time);
+		}
+		diag = y + x - i;
+		if (diag >= 0 and diag < n) {
+			++field[i][diag];
+			anim(i+1, diag+1, n/10+2, field[i][diag], time);
+		}
+	}
+	field[x][y] = -1;
+	anim(x+1, y+1, n/10+2, 'l', time);
+}
+
+void queen_del_an(int** field, int x, int y, int n, clock_t time) {
+	for (int i = 0; i < n; i++) {
+		--field[i][y];
+		anim(i+1, y+1, n/10+2, field[i][y], time);
+		--field[x][i];
+		anim(x+1, i+1, n/10+2, field[x][i], time);
+		int diag = y - x + i;
+		if (diag >= 0 and diag < n) {
+			--field[i][diag];
+			anim(i+1, diag+1, n/10+2, field[i][diag], time);
+		}
+		diag = y + x - i;
+		if (diag >= 0 and diag < n) {
+			--field[i][diag];
+			anim(i+1, diag+1, n/10+2, field[i][diag], time);
+		}
+	}
+	field[x][y] = 0;
+	anim(x+1, y+1, n/10+2, 0, time);
+}
+
+bool queen_an(int** field, int n, int i, clock_t time) {
+	bool res = 0;
+	for (int j = 0; j < n; j++) {
+		if (field[i][j] == 0) {
+			queen_stand_an(field, i, j, n, time);
+			if (i == n - 1) res = 1;
+			else {
+				if (!(res = queen_an(field, n, i + 1, time))) queen_del_an(field, i, j, n, time);
+			}
+		}
+		if (res) break;
+	}
+	end_queen(field, n, n / 10 + 2);
+	return res;
+}
+
+void queen_quest_an() {
+	clear();
+	char space = ' ';
+	int n;
+	cout << "Введите колличество ферзей и размерность поля: ";
+	cin >> n;
+
+	int** field;
+	field = new int* [n];
+	for (int j = 0; j < n; j++)
+		field[j] = new int[n];
+
+	int space_w = n / 10 + 2;
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			field[i][j] = 0;
+			cout << string(space_w, space) << field[i][j];
+		}
+		cout << endl;
+	}
+
+	clock_t start_time = clock();
+	queen_an(field, n, 0, start_time);
+	set_cons(0, n + 1, 1);
+	cout << "Ферзи отмечены как 'l'\nЕсли у вас всё перед глазами пронеслось, то попробуйте перезапустить программу и сразу выбрать этот пункт снова" << endl << endl;
 }
 
 int main() {
 	setlocale(LC_ALL, "RUS");
 
 	string head = "Добро пожаловать в лабу номер 2";
-	int time = 40;
+	int time = 30;
 	for (int i = 0; i < head.length(); i++) {
 		Sleep(time);
 		cout << head[i];
@@ -237,28 +403,51 @@ link:
 	c = opt_catch();
 	if (c == 1) {
 		fibon_sub();
-		goto link;
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
 	}
 	if (c == 2) {
 		horse_turn();
-		goto link;
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
 	}
 	if (c == 3) {
 		horse_turn_an();
 		goto link;
 	}
 	if (c == 4) {
-		cout << "\nЯ пока не сделал это" << endl;
-		goto link;
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
 	}
-	if (c == 4) {
-		cout << "\nЯ пока не сделал это" << endl;
-		goto link;
+	if (c == 5) {
+		queen_quest();
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
 	}
 	if (c == 6) {
+		queen_quest_an();
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
+	}
+	if (c == 7) {
 		system("pause");
 	}
-	if (c>6 or c<1) {
+	if (c>7 or c<1) {
 		time = 300;
 		cout << endl;
 		string err = "Нет, нет, нет. Пожалуйста следуйте инструкции.";
