@@ -18,7 +18,7 @@ int opt_catch() {
 	}
 	cout << endl;
 
-	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Разделяй и влавствуй, поиск максимума\n5 - Задача о ферзях\n6 - Задача о ферзях(наглядно)\n7 - Выход из программы\n\nВводите номер: ";
+	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Поиск максимума, разделяй и властвуй\n5 - Задача о ферзях\n6 - Задача о ферзях(наглядно)\n7 - Выход из программы\n\nВводите номер: ";
 	time = 1;
 	for (int i = 0; i < instr.length(); i++) {
 		Sleep(time);
@@ -386,6 +386,29 @@ void queen_quest_an() {
 	cout << "Ферзи отмечены как 'l'\nЕсли у вас всё перед глазами пронеслось, то попробуйте перезапустить программу и сразу выбрать этот пункт снова" << endl << endl;
 }
 
+int req_max(int* array,int left, int right) {
+	int middle, left_part, right_part;
+	if (left == right) return array[left];
+	middle = (left + right) / 2;
+	left_part = req_max(array, left, middle);
+	right_part = req_max(array, middle + 1, right);
+	if (left_part > right_part) return left_part;
+	else return right_part;
+}
+
+void divide_n_conquer() {
+	int n;
+	cout << "\nВведите размерность массива: ";
+	cin >> n;
+	cout << endl;
+	int* array = new int[n];
+	for (int i = 0; i < n; i++) array[i] = rand() % 100;
+	int max, left = 0, right = n - 1;
+	for (int i = 0; i < n; i++) cout << array[i] << " ";
+	max = req_max(array, left, right);
+	cout << "\nМаксимальный элемент массива: " << max << endl << endl;
+}
+
 int main() {
 	setlocale(LC_ALL, "RUS");
 
@@ -419,9 +442,14 @@ link:
 	}
 	if (c == 3) {
 		horse_turn_an();
-		goto link;
+		bool ask = 0;
+		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
 	}
 	if (c == 4) {
+		divide_n_conquer();
 		bool ask = 0;
 		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
 		cin >> ask;
