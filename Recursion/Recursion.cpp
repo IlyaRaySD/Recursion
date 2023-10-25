@@ -9,6 +9,14 @@ int moves[8][2] = { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}
 
 void clear() { system("cls"); }
 
+void print(int** array, int m, int n) {
+	for (int i = n - 1; i >= 0; i--) {
+		for (int j = 0; j < m; j++) cout << array[j][i] << ' ';
+		cout << endl;
+	}
+	cout << endl;
+}
+
 int opt_catch() {
 	int time = 10;
 	string option = "\nВыберите интересующий алгоритм:";
@@ -18,7 +26,7 @@ int opt_catch() {
 	}
 	cout << endl;
 
-	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Поиск максимума, разделяй и властвуй\n5 - Задача о ферзях\n6 - Задача о ферзях(наглядно)\n7 - Выход из программы\n\nВводите номер: ";
+	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Поиск максимума, разделяй и властвуй\n5 - Ханойские башни\n6 - Задача о ферзях\n7 - Задача о ферзях(наглядно)\n8 - Выход из программы\n\nВводите номер: ";
 	time = 1;
 	for (int i = 0; i < instr.length(); i++) {
 		Sleep(time);
@@ -193,11 +201,7 @@ void horse_turn() {
 	
 	if (horse_move(field, 2, x_h-1, y_h-1, n)) { 
 		cout << endl;
-		for (int i = 0; i < n; i++) {
-			for (int j = 0; j < n; j++)
-				cout << " " << field[i][j];
-			cout << endl;
-		}
+		print(field, n, n);
 	}
 	else
 		cout << "\nКонь не смог." << endl;
@@ -409,6 +413,44 @@ void divide_n_conquer() {
 	cout << "\nМаксимальный элемент массива: " << max << endl << endl;
 }
 
+void move_disk(int** towers, int tower_from, int tower_to, int n) {
+	int tmp = 0;
+	for (int i = n - 1; i >= 0; i--) {
+		if (towers[tower_from][i] != 0) {
+			tmp = towers[tower_from][i];
+			towers[tower_from][i] = 0;
+			break;
+		}
+	}
+	for (int i = 0; i < n; i++) if (towers[tower_to][i] == 0) {
+		towers[tower_to][i] = tmp; break;
+	}
+}
+
+void move_disks(int** towers, int disks, int main_tower, int end_tower, int temp_tower, int n) {
+	if (disks == 0) return;
+	move_disks(towers, disks - 1, main_tower, temp_tower, end_tower, n);
+	move_disk(towers, main_tower, end_tower, n);
+	move_disks(towers, disks - 1, temp_tower, end_tower, main_tower, n);
+}
+
+void hanoi_towers() {
+	int n;
+	cout << "\nВведите кол-во дисков: ";
+	cin >> n;
+	int** towers;
+	towers = new int* [3];
+	for (int i = 0; i < 3; i++) towers[i] = new int[n + 1];
+	for (int i = 0; i < 3; i++) for (int j = 0; j < n + 1; j++) towers[i][j] = 0;
+	for (int i = 0; i < n; i++) towers[0][i] = i + 1;
+	cout << endl;
+	cout << "Начальное положение:" << endl;
+	print(towers, 3, n + 1);
+	move_disks(towers, n, 0, 2, 1, n + 1);
+	cout << "Конечное положение:" << endl;
+	print(towers, 3, n + 1);
+}
+
 int main() {
 	setlocale(LC_ALL, "RUS");
 
@@ -420,6 +462,7 @@ int main() {
 	}
 	cout << endl << endl;
 
+	string question = "Продолжить?(1 - да, 0 - нет)";
 link:
 
 	int c;
@@ -427,7 +470,7 @@ link:
 	if (c == 1) {
 		fibon_sub();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
@@ -435,7 +478,7 @@ link:
 	if (c == 2) {
 		horse_turn();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
@@ -443,7 +486,7 @@ link:
 	if (c == 3) {
 		horse_turn_an();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
@@ -451,31 +494,39 @@ link:
 	if (c == 4) {
 		divide_n_conquer();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
 	}
 	if (c == 5) {
-		queen_quest();
+		hanoi_towers();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
 	}
 	if (c == 6) {
-		queen_quest_an();
+		queen_quest();
 		bool ask = 0;
-		cout << "Продолжить?(1 - да, 0 - нет)" << endl;
+		cout << question << endl;
 		cin >> ask;
 		if (ask == 1) goto link;
 		else system("pause");
 	}
 	if (c == 7) {
+		queen_quest_an();
+		bool ask = 0;
+		cout << question << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
+	}
+	if (c == 8) {
 		system("pause");
 	}
-	if (c>7 or c<1) {
+	if (c>8 or c<1) {
 		time = 300;
 		cout << endl;
 		string err = "Нет, нет, нет. Пожалуйста следуйте инструкции.";
