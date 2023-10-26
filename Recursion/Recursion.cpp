@@ -9,9 +9,13 @@ int moves[8][2] = { {2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}
 
 void clear() { system("cls"); }
 
-void print(int** array, int m, int n) {
-	for (int i = n - 1; i >= 0; i--) {
-		for (int j = 0; j < m; j++) cout << array[j][i] << ' ';
+void print(int** array, int m, int n, char zero) {
+	string space = "  ";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < m; j++) {
+			if (array[j][i] != 0) cout << space << array[j][i];
+			else cout << space << zero;
+		}
 		cout << endl;
 	}
 	cout << endl;
@@ -26,7 +30,7 @@ int opt_catch() {
 	}
 	cout << endl;
 
-	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Поиск максимума, разделяй и властвуй\n5 - Ханойские башни\n6 - Задача о ферзях\n7 - Задача о ферзях(наглядно)\n8 - Выход из программы\n\nВводите номер: ";
+	string instr = "1 - Последовательность Фибоначи\n2 - Задача о ходе коня\n3 - Задача о ходе коня(наглядно)\n4 - Поиск максимума, разделяй и властвуй\n5 - Ханойские башни\n6 - Ханойские башни(наглядно)\n7 - Задача о ферзях\n8 - Задача о ферзях(наглядно)\n0 - Выход из программы\n\nВводите номер: ";
 	time = 1;
 	for (int i = 0; i < instr.length(); i++) {
 		Sleep(time);
@@ -59,6 +63,16 @@ void anim(int x, int y, int space, T num, clock_t start_time) {
 		cout << num << " ";
 		Sleep(TIME);
 	}
+}
+
+template<typename T>
+void anim_slow(int x, int y, T num) {
+	Sleep(TIME/4);
+	set_cons(x, y, 2);
+	cout << "\b";
+	Sleep(TIME/4);
+	cout << num << " ";
+	Sleep(TIME/4);
 }
 
 void end_anim(int** field, int size, int space) {
@@ -201,7 +215,7 @@ void horse_turn() {
 	
 	if (horse_move(field, 2, x_h-1, y_h-1, n)) { 
 		cout << endl;
-		print(field, n, n);
+		print(field, n, n, 0);
 	}
 	else
 		cout << "\nКонь не смог." << endl;
@@ -413,42 +427,62 @@ void divide_n_conquer() {
 	cout << "\nМаксимальный элемент массива: " << max << endl << endl;
 }
 
-void move_disk(int** towers, int tower_from, int tower_to, int n) {
-	int tmp = 0;
-	for (int i = n - 1; i >= 0; i--) {
-		if (towers[tower_from][i] != 0) {
-			tmp = towers[tower_from][i];
-			towers[tower_from][i] = 0;
-			break;
-		}
-	}
-	for (int i = 0; i < n; i++) if (towers[tower_to][i] == 0) {
-		towers[tower_to][i] = tmp; break;
-	}
+void move_disk( string tower_from, string tower_to, int n) {
+	cout << "\n Из " << tower_from << " в " << tower_to;
 }
 
-void move_disks(int** towers, int disks, int main_tower, int end_tower, int temp_tower, int n) {
+void move_disks(int disks, string main_tower, string end_tower, string temp_tower, int n) {
 	if (disks == 0) return;
-	move_disks(towers, disks - 1, main_tower, temp_tower, end_tower, n);
-	move_disk(towers, main_tower, end_tower, n);
-	move_disks(towers, disks - 1, temp_tower, end_tower, main_tower, n);
+	move_disks(disks - 1, main_tower, temp_tower, end_tower, n);
+	move_disk(main_tower, end_tower, n);
+	move_disks(disks - 1, temp_tower, end_tower, main_tower, n);
 }
 
 void hanoi_towers() {
 	int n;
 	cout << "\nВведите кол-во дисков: ";
 	cin >> n;
+	move_disks(n, "Main", "End", "Temp", n + 1);
+	cout << endl;
+}
+
+void move_disk_an(int** towers, int tower_from, int tower_to, int n) {
+	int tmp = 0;
+	for (int i = 0; i < n; i++) {
+		if (towers[tower_from][i] != 0) {
+			tmp = towers[tower_from][i];
+			towers[tower_from][i] = 0;
+			anim_slow(tower_from + 1, i + 1, '|');
+			break;
+		}
+	}
+	for (int i = n - 1; i >= 0; i--) if (towers[tower_to][i] == 0) {
+		towers[tower_to][i] = tmp;
+		anim_slow(tower_to + 1, i + 1, tmp);
+		break;
+	}
+}
+
+void move_disks_an(int** towers, int disks, int main_tower, int end_tower, int temp_tower, int n) {
+	if (disks == 0) return;
+	move_disks_an(towers, disks - 1, main_tower, temp_tower, end_tower, n);
+	move_disk_an(towers, main_tower, end_tower, n);
+	move_disks_an(towers, disks - 1, temp_tower, end_tower, main_tower, n);
+}
+
+void hanoi_towers_an() {
+	clear();
+	int n;
+	cout << "Введите кол-во дисков: ";
+	cin >> n;
 	int** towers;
 	towers = new int* [3];
 	for (int i = 0; i < 3; i++) towers[i] = new int[n + 1];
 	for (int i = 0; i < 3; i++) for (int j = 0; j < n + 1; j++) towers[i][j] = 0;
-	for (int i = 0; i < n; i++) towers[0][i] = i + 1;
-	cout << endl;
-	cout << "Начальное положение:" << endl;
-	print(towers, 3, n + 1);
-	move_disks(towers, n, 0, 2, 1, n + 1);
-	cout << "Конечное положение:" << endl;
-	print(towers, 3, n + 1);
+	for (int i = n + 1; i >= 1; i--) towers[0][i] = i;
+	print(towers, 3, n + 1, '|');
+	move_disks_an(towers, n, 0, 2, 1, n + 1);
+	set_cons(0, n + 3, 1);
 }
 
 int main() {
@@ -508,7 +542,7 @@ link:
 		else system("pause");
 	}
 	if (c == 6) {
-		queen_quest();
+		hanoi_towers_an();
 		bool ask = 0;
 		cout << question << endl;
 		cin >> ask;
@@ -516,7 +550,7 @@ link:
 		else system("pause");
 	}
 	if (c == 7) {
-		queen_quest_an();
+		queen_quest();
 		bool ask = 0;
 		cout << question << endl;
 		cin >> ask;
@@ -524,6 +558,14 @@ link:
 		else system("pause");
 	}
 	if (c == 8) {
+		queen_quest_an();
+		bool ask = 0;
+		cout << question << endl;
+		cin >> ask;
+		if (ask == 1) goto link;
+		else system("pause");
+	}
+	if (c == 0) {
 		system("pause");
 	}
 	if (c>8 or c<1) {
