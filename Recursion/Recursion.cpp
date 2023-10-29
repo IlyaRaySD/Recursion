@@ -3,7 +3,6 @@
 #include "Windows.h"
 #include <WinUser.h>
 #include <fstream>
-#include <stdio.h>
 using namespace std;
 
 // variable for use in Sleep() functions
@@ -295,7 +294,7 @@ void fibon_one_el() {
 	cin >> n;
 	ofstream file; // file to write
 	file.open("fibon_steps.txt");
-	printf("\n%d-й элемент: %u", n, fibonachi(n, file));
+	printf("\n%d-й элемент: %u\n", n, fibonachi(n, file));
 	file.close();
 	system("notepad fibon_steps.txt"); // opening file
 	cout << endl;
@@ -355,7 +354,7 @@ void try_queen(char** desk, int row, int n, ofstream& file) {
 // the function is called when selecting the queen puzzle
 void queen_quest() {
 	int n; // number of queens
-	cout << "Введите количество ферзей: ";
+	cout << "\nВведите количество ферзей: ";
 	cin >> n;
 	cout << endl << endl;
 	ofstream file;
