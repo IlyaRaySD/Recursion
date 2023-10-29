@@ -337,6 +337,8 @@ void print_sol(char** desk, int n, ofstream& file) {
 
 // try to place a queen
 void try_queen(char** desk, int row, int n, ofstream& file) {
+// if you wanna see stack in file - just delete this comment
+	//file << "try_queen(" << row << ", " << n << ")\n"; 
 	if (row == n) { // if all queens are placed
 		num_of_sol++;
 		print_sol(desk, n, file);
