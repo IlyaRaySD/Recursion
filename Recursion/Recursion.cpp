@@ -569,9 +569,6 @@ void hanoi_towers_an() {
 	print(towers, 3, n + 1, '|'); // displaying the initial position of the towers of hanoi on the screen
 	move_disks_an(towers, n, 0, 2, 1, n + 1);
 	set_cons(0, n + 3, 1);
-	for (int i = 0; i < n; i++)
-		delete[] towers[i];
-	delete[] towers;
 }
 
 int main() {
