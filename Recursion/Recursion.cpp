@@ -184,10 +184,22 @@ void horse_turn_an() {
 	}
 
 	int x_h = 0, y_h = 0; // initial coordinates of the knight
-	cout << "Введите координаты коня: \nx = ";
+	retry:cout << "Введите координаты коня: \nx = ";
 	cin >> x_h;
+	if (x_h<1 or x_h>n) {
+		cin.clear();
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "\nInput Error\n";
+		goto retry;
+	}
 	cout << "y = ";
 	cin >> y_h;
+	if (y_h<1 or y_h>n) {
+		cin.clear();
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "\nInput Error\n";
+		goto retry;
+	}
 	cout << "Пожалуйста, подождите, это может занять какое-то время";
 
 	clock_t start_time = clock(); // counting processor ticks at the beginning of the algorithm
@@ -252,10 +264,22 @@ void horse_turn() {
 	}
 
 	int x_h = 0, y_h = 0;
-	cout << "\nВведите координаты коня: \nx = ";
+	retry:cout << "\nВведите координаты коня: \nx = ";
 	cin >> x_h;
+	if (x_h<1 or x_h>n) {
+		cin.clear();
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "\nInput Error";
+		goto retry;
+	}
 	cout << "y = ";
 	cin >> y_h;
+	if (y_h<1 or y_h>n) {
+		cin.clear();
+		cin.ignore(cin.rdbuf()->in_avail());
+		cout << "\nInput Error";
+		goto retry;
+	}
 	ofstream file; // file writing the sequence of knight moves
 	file.open("solution_knight.txt");
 	field[x_h-1][y_h-1] = 1;
@@ -574,7 +598,7 @@ void hanoi_towers_an() {
 }
 
 int main() {
-	setlocale(LC_ALL, "RUS"); // Cyrillic localization
+	setlocale(LC_ALL, "Russian"); // Cyrillic localization
 	// attention!!!
 	// throughout the program, all displayed information is in Russian
 	// attention!!!
